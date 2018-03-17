@@ -6,7 +6,9 @@ setup(
     packages=['bom_open',],
     author='Tim Burnham',
     author_email='timrburnham@gmail.com',
-    description='open() alternative which respects BOM from file',
+    url='https://github.com/timrburnham/bom_open',
+    description='open() alternative which respects Unicode BOM',
     long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     license='unlicense.org',
 )
