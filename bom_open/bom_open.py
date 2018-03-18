@@ -2,6 +2,7 @@ import codecs
 from io import TextIOWrapper
 
 def bom_detect(bytes_str):
+    """Return the Unicode encoding specified by bytes containing a BOM"""
     encodings = ('utf-8-sig', ('BOM_UTF8',)), \
                 ('utf-16', ('BOM_UTF16_LE', 'BOM_UTF16_BE')), \
                 ('utf-32', ('BOM_UTF32_LE', 'BOM_UTF32_BE'))
@@ -15,8 +16,8 @@ def bom_detect(bytes_str):
     return None
 
 class bom_open():
-    """Open a file. If reading in text mode and BOM is present,
-    switch to specified Unicode encoding.
+    """Context manager to open a file. If reading in text mode and BOM is
+    present, switch to specified Unicode encoding.
     Unlike normal open(), always write BOM, even for utf-8 mode."""
     def __init__(self,
                  file,
