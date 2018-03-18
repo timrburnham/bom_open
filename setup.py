@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='bom_open',
-    version='0.1.2',
+    version='0.2.0',
     packages=['bom_open',],
     author='Tim Burnham',
     author_email='timrburnham@gmail.com',

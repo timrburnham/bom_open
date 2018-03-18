@@ -1,4 +1,5 @@
 import codecs
+import sys
 from io import TextIOWrapper
 
 def bom_detect(bytes_str):
@@ -18,14 +19,20 @@ def bom_detect(bytes_str):
 class bom_open():
     """Context manager to open a file. If reading in text mode and BOM is
     present, switch to specified Unicode encoding.
-    Unlike normal open(), always write BOM, even for utf-8 mode."""
+
+    If file=None or '-', open stdin or stdout instead, depending on mode.
+
+    Unlike normal open(), write BOM by default, even for utf-8."""
     def __init__(self,
                  file,
                  mode='r',
                  buffering=-1,
                  encoding=None,
                  *args, **kwargs):
-        self.file = file
+        if file == '-':
+            self.file = None
+        else:
+            self.file = file
         self.mode = mode
         self.buffering = buffering
         # Python open() writes BOM for utf-8-sig, utf-16, or utf-32
@@ -35,11 +42,19 @@ class bom_open():
         self.kwargs = kwargs
 
     def __enter__(self):
-        self._f = open(self.file,
-                       self.mode,
-                       self.buffering,
-                       self.encoding,
-                       *self.args, **self.kwargs)
+        if self.file:
+            self._f = open(self.file,
+                           self.mode,
+                           self.buffering,
+                           self.encoding,
+                           *self.args, **self.kwargs)
+        elif self.mode == 'r':
+            self._f = sys.stdin
+        elif self.mode == 'w':
+            self._f = sys.stdout
+        else:
+            raise ValueError('No file specified, and mode not appropriate '
+                             'for stdin (r) or stdout (w)')
 
         if ('r' in self.mode or '+' in self.mode) and 'b' not in self.mode:
             peek = self._f.buffer.peek()
