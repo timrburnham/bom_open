@@ -1,9 +1,10 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='bom_open',
-    version='0.2.0',
+    version='0.3.0',
     packages=['bom_open',],
+    install_requires=['chardet'],
     author='Tim Burnham',
     author_email='timrburnham@gmail.com',
     url='https://github.com/timrburnham/bom_open',

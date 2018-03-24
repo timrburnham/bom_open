@@ -1,49 +1,36 @@
+import chardet
 import codecs
 import sys
 from io import TextIOWrapper
-
-def bom_detect(bytes_str):
-    """Return the Unicode encoding specified by string beginning with
-    a Byte Order Mark"""
-    encodings = ('utf-8-sig', ('BOM_UTF8',)), \
-                ('utf-16', ('BOM_UTF16_LE', 'BOM_UTF16_BE')), \
-                ('utf-32', ('BOM_UTF32_LE', 'BOM_UTF32_BE'))
-
-    for enc, boms in encodings:
-        for bom in boms:
-            magic = getattr(codecs, bom)
-            if bytes_str.startswith(magic):
-                return enc
-
-    return None
 
 class StdIOError(Exception):
     pass
 
 class bom_open():
-    """Context manager to open a file. If reading in text mode and
-    Byte Order Mark is present, switch to Unicode encoding specified by BOM.
+    """Context manager to open a file or stdin/stdout. Encoding of text-mode
+    files are detected with chardet (when reading). Pass additional args/kwargs
+    to `open()`.
 
-    If `file=None` or `file='-'`, open stdin (for reading) or stdout (for
+    If `file=None` or `file='-'`, open stdin (when reading) or stdout (when
     writing) instead.
 
-    Unlike normal `open()`, write BOM by default, even for utf-8. To override,
-    set `encoding='utf-8'` or non-unicode encoding."""
+    Write Unicode BOM by default. To override, set `encoding='utf-8'` or
+    non-unicode encoding. Python writes BOM for utf-8-sig, utf-16, or utf-32.
+    BOM is not written if endianness is specified."""
     def __init__(self,
                  file,
                  mode='r',
                  buffering=-1,
-                 encoding=None,
+                 encoding='utf-8-sig',
                  *args, **kwargs):
         if file == '-':
             self.file = None
         else:
             self.file = file
+
         self.mode = mode
         self.buffering = buffering
-        # Python open() writes BOM for utf-8-sig, utf-16, or utf-32
-        # BOM is not written if endianness is specified
-        self.encoding = encoding or 'utf-8-sig'
+        self.encoding = encoding
         self.args = args
         self.kwargs = kwargs
 
@@ -63,12 +50,12 @@ class bom_open():
                              'for stdin (r) or stdout (w)')
 
         if ('r' in self.mode or '+' in self.mode) and 'b' not in self.mode:
+            # chardet bytes buffer without advancing file position
             peek = self._f.buffer.peek()
-            detected_encoding = bom_detect(peek)
+            detect = chardet.detect(peek)
+            self.encoding = detect['encoding'] or self.encoding
 
-            self.encoding = detected_encoding or self.encoding
-
-            # re-attach file with new encoding
+            # re-attach file with detected encoding
             if self._f.encoding.lower() != self.encoding.lower():
                 self._f = TextIOWrapper(self._f.detach(),
                                         encoding=self.encoding)
