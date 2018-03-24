@@ -8,8 +8,7 @@ class StdIOError(Exception):
 
 class bom_open():
     """Context manager to open a file or stdin/stdout. Encoding of text-mode
-    files are detected with chardet (when reading). Pass additional args/kwargs
-    to `open()`.
+    input is detected with chardet. Pass additional args/kwargs to `open()`.
 
     If `file=None` or `file='-'`, open stdin (when reading) or stdout (when
     writing) instead.
