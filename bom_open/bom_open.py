@@ -7,20 +7,19 @@ class StdIOError(Exception):
     pass
 
 class bom_open():
-    """Context manager to open a file or stdin/stdout. Encoding of text-mode
-    input is detected with chardet. Pass additional args/kwargs to `open()`.
-
+    """Context manager to open a file or stdin/stdout. Encoding can be detected
+    with chardet. Pass additional arguments to `open()`.
+    Python writes BOM for utf-8-sig, utf-16, or utf-32.  BOM is not written
+    when endianness is specified.
     If `file=None` or `file='-'`, open stdin (when reading) or stdout (when
     writing) instead.
-
-    Write Unicode BOM by default. To override, set `encoding='utf-8'` or
-    non-unicode encoding. Python writes BOM for utf-8-sig, utf-16, or utf-32.
-    BOM is not written if endianness is specified."""
+    If `encoding=None` and `mode='r'` or `'w+'`, file encoding will be detected
+    using chardet."""
     def __init__(self,
                  file,
                  mode='r',
                  buffering=-1,
-                 encoding='utf-8-sig',
+                 encoding=None,
                  *args, **kwargs):
         if file == '-':
             self.file = None
@@ -48,8 +47,10 @@ class bom_open():
             raise StdIOError('No file specified, and mode not appropriate '
                              'for stdin (r) or stdout (w)')
 
-        if ('r' in self.mode or '+' in self.mode) and 'b' not in self.mode:
-            # chardet bytes buffer without advancing file position
+        if (self.encoding is None
+            and ('r' in self.mode or '+' in self.mode)
+            and 'b' not in self.mode):
+            # run chardet on buffer without advancing file position
             peek = self._f.buffer.peek()
             detect = chardet.detect(peek)
             self.encoding = detect['encoding'] or self.encoding
