@@ -11,8 +11,7 @@ class bom_open():
     with chardet. Pass additional arguments to `open()`.
     Python writes BOM for utf-8-sig, utf-16, or utf-32.  BOM is not written
     when endianness is specified.
-    If `file=None` or `file='-'`, open stdin (when reading) or stdout (when
-    writing) instead.
+    If `file=None` or `'-'`, open stdin (for reading) or stdout (for writing).
     If `encoding=None` and `mode='r'` or `'w+'`, file encoding will be detected
     using chardet."""
     def __init__(self,
@@ -42,14 +41,18 @@ class bom_open():
         elif self.mode == 'r':
             self._f = sys.stdin
         elif self.mode == 'w':
+            if self.encoding:
+                sys.stdout = open(sys.stdout.fileno(), 'w',
+                                  encoding=self.encoding,
+                                  buffering=1)
             self._f = sys.stdout
         else:
             raise StdIOError('No file specified, and mode not appropriate '
                              'for stdin (r) or stdout (w)')
 
         if (self.encoding is None
-            and ('r' in self.mode or '+' in self.mode)
-            and 'b' not in self.mode):
+            and 'b' not in self.mode)
+            and ('r' in self.mode or '+' in self.mode):
             # run chardet on buffer without advancing file position
             peek = self._f.buffer.peek()
             detect = chardet.detect(peek)
