@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='bom_open',
-    version='0.3.3',
+    version='0.3.4',
     packages=['bom_open',],
     install_requires=['chardet'],
     setup_requires=['setuptools>=38.6.0'],

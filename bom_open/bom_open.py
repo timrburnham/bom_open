@@ -51,12 +51,12 @@ class bom_open():
                              'for stdin (r) or stdout (w)')
 
         if (self.encoding is None
-            and 'b' not in self.mode)
-            and ('r' in self.mode or '+' in self.mode):
+            and 'b' not in self.mode
+            and ('r' in self.mode or '+' in self.mode)):
             # run chardet on buffer without advancing file position
             peek = self._f.buffer.peek()
-            detect = chardet.detect(peek)
-            self.encoding = detect['encoding'] or self.encoding
+            detected = chardet.detect(peek)
+            self.encoding = detected['encoding']
 
             # re-attach file with detected encoding
             if self._f.encoding.lower() != self.encoding.lower():
