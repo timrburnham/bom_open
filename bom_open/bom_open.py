@@ -59,7 +59,8 @@ class bom_open():
             self.encoding = detected['encoding']
 
             # re-attach file with detected encoding
-            if self._f.encoding.lower() != self.encoding.lower():
+            if (self.encoding and
+                    self._f.encoding.lower() != self.encoding.lower()):
                 self._f = TextIOWrapper(self._f.detach(),
                                         encoding=self.encoding)
 
