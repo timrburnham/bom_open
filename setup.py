@@ -2,8 +2,9 @@ from setuptools import setup
 
 setup(
     name='bom_open',
-    version='0.3.6',
+    version='0.4',
     packages=['bom_open',],
+    python_requires='>=3.4',
     install_requires=['chardet'],
     setup_requires=['setuptools>=38.6.0'],
     author='Tim Burnham',
