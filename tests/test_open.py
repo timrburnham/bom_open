@@ -29,6 +29,12 @@ class TestBomOpen(unittest.TestCase):
             contents = f.read()
         self.assertEqual(contents, 'hello\n')
 
+    def test_empty(self):
+        with bom_open(_get_test_filename('empty.txt')) as f:
+            self.assertEqual(f.encoding, 'UTF-8')
+            contents = f.read()
+        self.assertEqual(contents, '')
+
     def test_invalid(self):
         with bom_open(_get_test_filename('invalid.txt')) as f:
             self.assertEqual(f.encoding, 'UTF-8')
