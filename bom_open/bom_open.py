@@ -14,11 +14,7 @@ class bom_open():
     If `file=None` or `'-'`, open stdin (for reading) or stdout (for writing).
     If `encoding=None` and `mode='r'` or `'w+'`, file encoding will be detected
     using chardet."""
-    def __init__(self,
-                 file,
-                 mode='r',
-                 buffering=-1,
-                 encoding=None,
+    def __init__(self, file, mode='r', buffering=-1, encoding=None,
                  *args, **kwargs):
         if file == '-':
             self.file = None
@@ -33,10 +29,7 @@ class bom_open():
 
     def __enter__(self):
         if self.file:
-            self._f = open(self.file,
-                           self.mode,
-                           self.buffering,
-                           self.encoding,
+            self._f = open(self.file, self.mode, self.buffering, self.encoding,
                            *self.args, **self.kwargs)
         elif self.mode == 'r':
             self._f = sys.stdin
@@ -59,8 +52,7 @@ class bom_open():
             self.encoding = detected['encoding']
 
             # re-attach file with detected encoding
-            if (self.encoding and
-                    self._f.encoding.lower() != self.encoding.lower()):
+            if (self._f.encoding.lower() != (self.encoding or '').lower()):
                 self._f = TextIOWrapper(self._f.detach(),
                                         encoding=self.encoding)
 
