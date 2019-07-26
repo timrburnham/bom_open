@@ -62,11 +62,11 @@ class TestBomOpen(unittest.TestCase):
         self.assertEqual(contents, '己所不欲，勿施於人。')
 
     def test_stdin(self):
-        pipe = sp.run(['python', 'stdin.py'],
+        pipe = sp.run(['python', _get_test_filename('stdin.py')],
                         input=b'\xff\xfeh\x00i\x00',
                         stdout=sp.PIPE, stderr=sp.PIPE,
                         bufsize=-1)
         encoding = pipe.stderr.decode('utf-8')
-        content = pipe.stdout.decode('utf-8')
+        contents = pipe.stdout
         self.assertEqual(encoding.lower(), 'utf-16\n')
-        self.assertEqual(content, 'hi\n')
+        self.assertEqual(contents, b'hi\n')
