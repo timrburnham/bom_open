@@ -11,7 +11,6 @@ _tests_locale = locale.getpreferredencoding()
 def _get_test_filename(name):
     return os.path.join(_tests_base, name)
 
-
 class TestBomOpen(unittest.TestCase):
 
     def test_utf8le(self):
@@ -64,8 +63,10 @@ class TestBomOpen(unittest.TestCase):
 
     def test_stdin(self):
         pipe = sp.run(['python', 'test_stdin.py'],
-                      input=b'\xff\xfeh\x00i\x00',
-                      stdout=sp.PIPE, stderr=sp.PIPE)
+                        input=b'\xff\xfeh\x00i\x00',
+                        stdout=sp.PIPE, stderr=sp.PIPE,
+                        bufsize=-1)
         encoding = pipe.stderr.decode('utf-8')
-        self.assertEqual(encoding.lower(), 'utf-16')
-        
+        content = pipe.stdout.decode('utf-8')
+        self.assertEqual(encoding.lower(), 'utf-16\n')
+        self.assertEqual(content, 'hi\n')
