@@ -1,6 +1,7 @@
 import locale
 import os
 import unittest
+import subprocess as sp
 
 from bom_open import bom_open
 
@@ -60,3 +61,11 @@ class TestBomOpen(unittest.TestCase):
             self.assertEqual(f.encoding.lower(), 'utf-8')
             contents = f.read()
         self.assertEqual(contents, '己所不欲，勿施於人。')
+
+    def test_stdin(self):
+        pipe = sp.run(['python', 'test_stdin.py'],
+                      input=b'\xff\xfeh\x00i\x00',
+                      stdout=sp.PIPE, stderr=sp.PIPE)
+        encoding = pipe.stderr.decode('utf-8')
+        self.assertEqual(encoding.lower(), 'utf-16')
+        
