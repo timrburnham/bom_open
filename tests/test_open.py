@@ -13,7 +13,7 @@ def _get_test_filename(name):
 
 class TestBomOpen(unittest.TestCase):
 
-    def test_utf8le(self):
+    def test_utf8sig(self):
         with bom_open(_get_test_filename('bom8-sig.txt')) as f:
             self.assertEqual(f.encoding.lower(), 'utf-8-sig')
             contents = f.read()
