@@ -11,9 +11,9 @@ def _get_test_filename(name):
     return os.path.join(_tests_base, name)
 
 
-class TestBomOpen(unittest.TestCase):
+class TestContextManagerOpenFile(unittest.TestCase):
 
-    def test_utf8le(self):
+    def test_utf8sig(self):
         with bom_open(_get_test_filename('bom8-sig.txt')) as f:
             self.assertEqual(f.encoding.lower(), 'utf-8-sig')
             contents = f.read()
@@ -60,3 +60,12 @@ class TestBomOpen(unittest.TestCase):
             self.assertEqual(f.encoding.lower(), 'utf-8')
             contents = f.read()
         self.assertEqual(contents, '己所不欲，勿施於人。')
+
+
+class TestNormalOpenFile(unittest.TestCase):
+
+    def test_utf8sig(self):
+        f = bom_open(_get_test_filename('bom8-sig.txt'))
+        self.assertEqual(f.encoding.lower(), 'utf-8-sig')
+        contents = f.read()
+        self.assertEqual(contents, 'hello\n')
