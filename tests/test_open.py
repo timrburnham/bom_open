@@ -62,7 +62,7 @@ class TestBomOpen(unittest.TestCase):
         self.assertEqual(contents, '己所不欲，勿施於人。')
 
     def test_stdin(self):
-        pipe = sp.run(['python', 'test_stdin.py'],
+        pipe = sp.run(['python', 'stdin.py'],
                         input=b'\xff\xfeh\x00i\x00',
                         stdout=sp.PIPE, stderr=sp.PIPE,
                         bufsize=-1)
