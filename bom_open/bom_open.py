@@ -15,12 +15,19 @@ class bom_open():
     If `encoding=None` and `mode='r'` or `'w+'`, file encoding will be detected
     using chardet."""
     def __init__(self, file, mode='r', buffering=-1, encoding=None,
-                 *args, **kwargs):
+                 *args, **kwargs
+    ):
         if file == '-':
             self.file = None
         else:
             self.file = file
 
+        # if UTF-8, force BOM removal
+        if (encoding or '').lower() == 'utf-8':
+            self.encoding = 'utf-8-sig'
+        else:
+            self.encoding = encoding
+    
         self.mode = mode
         self._buffering = buffering
         self._encoding = encoding

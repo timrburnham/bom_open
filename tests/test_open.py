@@ -19,6 +19,13 @@ class TestContextManagerOpenFile(unittest.TestCase):
             contents = f.read()
         self.assertEqual(contents, 'hello\n')
 
+    def test_utf8(self):
+        with bom_open(_get_test_filename('bom8-sig.txt'),
+                      encoding='UTF-8') as f:
+            self.assertEqual(f.encoding.lower(), 'utf-8-sig')
+            contents = f.read()
+        self.assertEqual(contents, 'hello\n')
+
     def test_utf16le(self):
         with bom_open(_get_test_filename('bom16le.txt')) as f:
             self.assertEqual(f.encoding.lower(), 'utf-16')
