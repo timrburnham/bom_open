@@ -22,21 +22,21 @@ class bom_open():
             self.file = file
 
         self.mode = mode
-        self.buffering = buffering
+        self._buffering = buffering
         self._encoding = encoding
         self.args = args
         self.kwargs = kwargs
 
         if self.file:
-            self._f = open(self.file, self.mode, self.buffering, self._encoding,
+            self._f = open(self.file, self.mode, self._buffering, self._encoding,
                            *self.args, **self.kwargs)
         elif self.mode == 'r':
             self._f = sys.stdin
         elif self.mode == 'w':
             if self._encoding:
-                self.buffering = 1
+                self._buffering = 1
                 sys.stdout = open(sys.stdout.fileno(), 'w',
-                                  buffering=self.buffering,
+                                  buffering=self._buffering,
                                   encoding=self._encoding,
                                   *self.args, **self.kwargs)
             self._f = sys.stdout
