@@ -26,9 +26,7 @@ class bom_open():
         self._encoding = encoding
         self.args = args
         self.kwargs = kwargs
-        self._f = None
 
-    def __enter__(self):
         if self.file:
             self._f = open(self.file, self.mode, self.buffering, self._encoding,
                            *self.args, **self.kwargs)
@@ -36,9 +34,11 @@ class bom_open():
             self._f = sys.stdin
         elif self.mode == 'w':
             if self._encoding:
+                self.buffering = 1
                 sys.stdout = open(sys.stdout.fileno(), 'w',
+                                  buffering=self.buffering,
                                   encoding=self._encoding,
-                                  buffering=1)
+                                  *self.args, **self.kwargs)
             self._f = sys.stdout
         else:
             raise StdIOError('No file specified, and mode not appropriate '
@@ -57,15 +57,13 @@ class bom_open():
                 self._f = TextIOWrapper(self._f.detach(),
                                         encoding=self._encoding)
 
+    def __enter__(self):
         return self._f
 
     def __exit__(self, type, value, traceback):
         self._f.close()
 
     def __getattr__(self, name):
-        if self._f is None:
-            self.__enter__()
-
         return getattr(self._f, name)
 
     def close(self):
@@ -77,7 +75,4 @@ class bom_open():
         return self
 
     def __next__(self):
-        if self._f is None:
-            self.__enter__()
-
         return next(self._f)
