@@ -13,7 +13,7 @@ def _get_test_filename(name):
 
 class TestBomOpen(unittest.TestCase):
 
-    def test_utf8le(self):
+    def test_utf8sig(self):
         with bom_open(_get_test_filename('bom8-sig.txt')) as f:
             self.assertEqual(f.encoding.lower(), 'utf-8-sig')
             contents = f.read()
@@ -42,6 +42,21 @@ class TestBomOpen(unittest.TestCase):
             self.assertEqual(f.encoding.lower(), 'utf-8')
             contents = f.read()
         self.assertEqual(contents, 'Ã(')
+
+    def test_windows_curly_quotes(self):
+        with bom_open(_get_test_filename('windows-curly-quotes.txt')) as f:
+            # Often reported as windows-1250, windows-1252, or windows-1258
+            self.assertIn('windows-125', f.encoding.lower())
+            contents = f.read()
+        self.assertEqual(contents, 'Bob’s Burgers')
+
+    def test_windows_curly_quotes_in_utf8sig(self):
+        with bom_open(_get_test_filename('bom8-sig-with-windows-curly-quotes.txt')) as f:
+            # Often reported as windows-1250, windows-1252, or windows-1258
+            self.assertEqual(f.encoding.lower(), 'utf-8-sig')
+            with self.assertRaisesRegexp(UnicodeDecodeError,
+                                         "codec can't decode byte 0x92 in position 3: invalid start byte"):
+                contents = f.read()
 
     def test_xff(self):
         with bom_open(_get_test_filename('xff.txt')) as f:
