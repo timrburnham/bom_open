@@ -5,7 +5,6 @@ import unittest
 from bom_open import bom_open
 
 _tests_base = os.path.dirname(__file__)
-_tests_locale = locale.getpreferredencoding()
 
 def _get_test_filename(name):
     return os.path.join(_tests_base, name)
@@ -19,7 +18,7 @@ class TestContextManagerOpenFile(unittest.TestCase):
             contents = f.read()
         self.assertEqual(contents, 'hello\n')
 
-    def test_utf8(self):
+    def test_no_detect(self):
         with bom_open(_get_test_filename('bom8-sig.txt'),
                       encoding='UTF-8') as f:
             self.assertEqual(f.encoding.lower(), 'utf-8-sig')
@@ -40,13 +39,13 @@ class TestContextManagerOpenFile(unittest.TestCase):
 
     def test_empty(self):
         with bom_open(_get_test_filename('empty.txt')) as f:
-            self.assertEqual(f.encoding, _tests_locale)
+            self.assertEqual(f.encoding.lower(), 'utf-8-sig')
             contents = f.read()
         self.assertEqual(contents, '')
 
     def test_invalid(self):
         with bom_open(_get_test_filename('invalid.txt')) as f:
-            self.assertEqual(f.encoding.lower(), 'utf-8')
+            self.assertEqual(f.encoding.lower(), 'utf-8-sig')
             contents = f.read()
         self.assertEqual(contents, 'Ã(')
 
@@ -61,8 +60,9 @@ class TestContextManagerOpenFile(unittest.TestCase):
         with bom_open(_get_test_filename('bom8-sig-with-windows-curly-quotes.txt')) as f:
             # Often reported as windows-1250, windows-1252, or windows-1258
             self.assertEqual(f.encoding.lower(), 'utf-8-sig')
-            with self.assertRaisesRegexp(UnicodeDecodeError,
-                                         "codec can't decode byte 0x92 in position 3: invalid start byte"):
+            with self.assertRaisesRegex(UnicodeDecodeError,
+            "codec can't decode byte 0x92 in position 3: invalid start byte"
+            ):
                 contents = f.read()
 
     def test_xff(self):
@@ -73,13 +73,13 @@ class TestContextManagerOpenFile(unittest.TestCase):
 
     def test_ascii(self):
         with bom_open(_get_test_filename('abc.txt')) as f:
-            self.assertEqual(f.encoding.lower(), 'ascii')
+            self.assertEqual(f.encoding.lower(), 'utf-8-sig')
             contents = f.read()
         self.assertEqual(contents, 'abc\n')
 
     def test_hz(self):
         with bom_open(_get_test_filename('hz.txt')) as f:
-            self.assertEqual(f.encoding.lower(), 'utf-8')
+            self.assertEqual(f.encoding.lower(), 'utf-8-sig')
             contents = f.read()
         self.assertEqual(contents, '己所不欲，勿施於人。')
 
