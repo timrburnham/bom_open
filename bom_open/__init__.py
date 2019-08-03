@@ -1,1 +1,1 @@
-from .bom_open import bom_open
+from .bom_open import bom_open, StdIOError
