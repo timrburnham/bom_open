@@ -6,6 +6,16 @@ python:
   - 3.6
   - 3.7
   - 3.8-dev
+jobs:
+  include:
+    - os: windows
+      language: bash
+      python: 3.7
+      before_install:
+        - export TRAVIS_PYTHON_VERSION=3.7
+        - choco install python --version $TRAVIS_PYTHON_VERSION
+        - export PATH="/C/Python37:/C/Python37/Scripts:$PATH"
+
 cache: pip
 install: pip install tox-travis
 script: tox
